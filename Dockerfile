@@ -2,11 +2,12 @@ FROM node:lts-alpine
 
 WORKDIR /app
 COPY package.json /app
-RUN npm i -g yarn
+COPY yarn.lock /app
+
 RUN yarn install
 
 COPY . /app
 
 EXPOSE 3000
 
-CMD npm run db:create; node server.js
+CMD yarn run db:create; node index.js

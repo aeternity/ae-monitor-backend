@@ -40,4 +40,4 @@ setInterval(async () => {
   if(result) {
     await batchUpdateDB(batch.id, result)
   }
-}, 15000)
+}, 60000)

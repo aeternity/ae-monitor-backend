@@ -1,0 +1,28 @@
+version: "3.6"
+services:
+  ae-monitor:
+    build: .
+    container_name: ae-monitor
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - NODE_URL=https://mainnet.aeternity.io
+      - NODE_ENV=production
+      # all optional
+      - POSTGRES_PASSWORD=postgres # replace with your own credentials
+      - POSTGRES_USER=postgres # replace with your own credentials
+      - POSTGRES_DB=mainnet
+      - POSTGRES_HOST=postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:12
+    hostname: postgres
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres # replace with your own credentials
+      - POSTGRES_USER=postgres # replace with your own credentials
+      - POSTGRES_DB=superhero

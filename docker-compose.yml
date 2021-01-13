@@ -3,8 +3,6 @@ services:
   ae-monitor:
     build: .
     container_name: ae-monitor
-    ports:
-      - "3000:3000"
     depends_on:
       - monitor-postgres
     environment:
@@ -23,8 +21,6 @@ services:
     restart: unless-stopped
     links:
       - monitor-postgres
-    ports:
-      - 3001:3000
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -37,8 +33,6 @@ services:
     hostname: monitor-postgres
     restart: unless-stopped
     container_name: monitor-postgres
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres # replace with your own credentials
       - POSTGRES_USER=postgres # replace with your own credentials

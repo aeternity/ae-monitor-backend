@@ -8,6 +8,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      batchId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Batches',
+          key: 'id',
+          as: 'batchId',
+        }
+      },
       peerId: {
         type: Sequelize.STRING
       },
@@ -39,7 +47,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       port: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       topDifficulty: {
         type: Sequelize.STRING

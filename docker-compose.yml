@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      - monitor-postgres
     environment:
       - NODE_URL=https://mainnet.aeternity.io
       - NODE_ENV=production
@@ -14,15 +14,32 @@ services:
       - POSTGRES_PASSWORD=postgres # replace with your own credentials
       - POSTGRES_USER=postgres # replace with your own credentials
       - POSTGRES_DB=mainnet
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=monitor-postgres
     restart: unless-stopped
 
-  postgres:
-    image: postgres:12
-    hostname: postgres
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mgrafana
     restart: unless-stopped
-    container_name: postgres
+    links:
+      - monitor-postgres
+    ports:
+      - 3001:3000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=test # add your own credentials here
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+  monitor-postgres:
+    image: postgres:12
+    hostname: monitor-postgres
+    restart: unless-stopped
+    container_name: monitor-postgres
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres # replace with your own credentials
       - POSTGRES_USER=postgres # replace with your own credentials
-      - POSTGRES_DB=superhero
+      - POSTGRES_DB=mainnet

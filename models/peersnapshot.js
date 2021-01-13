@@ -10,11 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      PeerSnapshot.belongsTo(models.Batch, {
+        foreignKey: 'batchId'
+      })
     }
   }
   PeerSnapshot.init({
     peerId: DataTypes.STRING,
+    batchId: DataTypes.INTEGER,
     firstSeen: DataTypes.DATE,
     genesisHash: DataTypes.STRING,
     host: DataTypes.STRING,
@@ -24,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     nodeRevision: DataTypes.STRING,
     nodeVendor: DataTypes.STRING,
     nodeVersion: DataTypes.STRING,
-    port: DataTypes.NUMBER,
+    port: DataTypes.INTEGER,
     topDifficulty: DataTypes.STRING,
     topHash: DataTypes.STRING
   }, {

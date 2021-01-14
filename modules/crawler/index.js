@@ -30,10 +30,10 @@ const batchUpdateDB = async (batchId, data) => {
 
 setInterval(async () => {
   const batch = await Batch.create({})
-  const result = await axios.get('https://mainnet-explorer.aeternity.art/v2/status/network')
+  const result = await axios.get('https://mainnet-explorer.aeternity.art/v2/debug/network')
     .then(res => res.data)
     .catch(e => {
-      console.error(e);
+      console.error(e.message);
       return null
     })
   await Batch.update({success: !!result}, {where: {id: batch.id}})

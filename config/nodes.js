@@ -5,7 +5,7 @@ module.exports = [
   },
   {
     nodeId: 'sfo',
-    url: 'https://138.68.22.27:3113/v2/debug/network'
+    url: 'http://138.68.22.27:3113/v2/debug/network'
   },
   {
     nodeId: 'sgp',

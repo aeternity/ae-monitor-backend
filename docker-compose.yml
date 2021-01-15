@@ -17,7 +17,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: mgrafana
+    container_name: grafana
     restart: unless-stopped
     links:
       - monitor-postgres

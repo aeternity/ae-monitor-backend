@@ -1,10 +1,12 @@
 const { PeerSnapshot, Batch } = require('../../models')
 const axios = require('axios');
+const nodes = require('../../config/nodes')
 
-const mapToDB = (batchId, peerId, peerData) => {
+const mapToDB = (batchId, peerId, nodeId, peerData) => {
   return {
     peerId,
     batchId,
+    sourceNode: nodeId,
     firstSeen: peerData.first_seen * 1000,
     genesisHash: peerData.genesis_hash,
     host: peerData.host,
@@ -20,24 +22,23 @@ const mapToDB = (batchId, peerId, peerData) => {
   }
 }
 
-const batchUpdateDB = async (batchId, data) => {
-  const newSnapshots = Object.keys(data)
-
-    .map(peerId => mapToDB(batchId, peerId, data[peerId]))
-  await PeerSnapshot.bulkCreate(newSnapshots)
+const batchUpdateDB = async (newSnapshots) => {
+  await PeerSnapshot.bulkCreate(newSnapshots.flat())
 }
-
 
 setInterval(async () => {
   const batch = await Batch.create({})
-  const result = await axios.get('https://mainnet-explorer.aeternity.art/v2/debug/network')
-    .then(res => res.data)
+  const results = await Promise.all(nodes.map(async ({ nodeId, url }) => axios.get(url)
+    .then(res => Object.keys(res.data).map(peerId => mapToDB(batch.id, peerId, nodeId, res.data[peerId])))
     .catch(e => {
-      console.error(e.message);
-      return null
-    })
-  await Batch.update({success: !!result}, {where: {id: batch.id}})
-  if(result) {
-    await batchUpdateDB(batch.id, result)
+      console.error(`Query for node ${nodeId} failed with: ${e.message}`);
+      return []
+    })));
+
+  const success = results.some(result => result.length > 0)
+  await Batch.update({success: success}, {where: {id: batch.id}})
+
+  if(success) {
+    await batchUpdateDB(results)
   }
 }, 60000)

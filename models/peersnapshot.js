@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     nodeVersion: DataTypes.STRING,
     port: DataTypes.INTEGER,
     topDifficulty: DataTypes.STRING,
-    topHash: DataTypes.STRING
+    topHash: DataTypes.STRING,
+    sourceNode: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'PeerSnapshot',

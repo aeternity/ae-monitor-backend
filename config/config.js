@@ -5,5 +5,6 @@ module.exports = {
     password: process.env.POSTGRES_PASSWORD || 'postgres',
     host: process.env.POSTGRES_HOST || 'localhost',
     database: process.env.POSTGRES_DB || 'mainnet',
+    logging: false
   },
 };

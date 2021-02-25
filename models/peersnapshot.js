@@ -30,7 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     port: DataTypes.INTEGER,
     topDifficulty: DataTypes.STRING,
     topHash: DataTypes.STRING,
-    sourceNode: DataTypes.STRING
+    sourceNode: DataTypes.STRING,
+    ipProvider: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'PeerSnapshot',

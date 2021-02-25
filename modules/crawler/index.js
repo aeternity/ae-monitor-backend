@@ -1,7 +1,7 @@
 const { PeerSnapshot, Batch } = require('../../models')
 const axios = require('axios');
 const nodes = require('../../config/nodes')
-
+const { getIpMetaInfo } = require('../ipMetaInfo')
 const mapToDB = (batchId, peerId, nodeId, peerData) => {
   return {
     peerId,
@@ -23,7 +23,7 @@ const mapToDB = (batchId, peerId, nodeId, peerData) => {
 }
 
 const batchUpdateDB = async (newSnapshots) => {
-  await PeerSnapshot.bulkCreate(newSnapshots.flat())
+  await PeerSnapshot.bulkCreate(newSnapshots)
 }
 
 setInterval(async () => {
@@ -37,8 +37,12 @@ setInterval(async () => {
 
   const success = results.some(result => result.length > 0)
   await Batch.update({success: success}, {where: {id: batch.id}})
+  const flatResults = results.flat()
+  for (const entry of flatResults) {
+     entry.ipProvider = await getIpMetaInfo(entry.host)
+  }
 
   if(success) {
-    await batchUpdateDB(results)
+    await batchUpdateDB(flatResults)
   }
 }, 60000)

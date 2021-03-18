@@ -34,6 +34,9 @@ module.exports = (sequelize, DataTypes) => {
     ipProvider: DataTypes.STRING
   }, {
     sequelize,
+    indexes: [
+      { fields: ['batchId','lastSeen', 'ipProvider', 'peerId', 'createdAt'] },
+    ],
     modelName: 'PeerSnapshot',
   });
   return PeerSnapshot;

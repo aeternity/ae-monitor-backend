@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     topDifficulty: DataTypes.STRING,
     topHash: DataTypes.STRING,
     sourceNode: DataTypes.STRING,
-    ipProvider: DataTypes.STRING
+    ipProvider: DataTypes.STRING,
+    internal: DataTypes.BOOLEAN
   }, {
     sequelize,
     indexes: [

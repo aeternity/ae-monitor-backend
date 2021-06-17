@@ -32,6 +32,8 @@ services:
     image: postgres:12
     hostname: monitor-postgres
     restart: unless-stopped
+    ports:
+      - 5432:5432
     container_name: monitor-postgres
     environment:
       - POSTGRES_PASSWORD=postgres # replace with your own credentials

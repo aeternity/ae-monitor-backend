@@ -2,6 +2,7 @@ const { PeerSnapshot, Batch } = require('../../models')
 const axios = require('axios');
 const nodes = require('../../config/nodes')
 const { getIpMetaInfo } = require('../ipMetaInfo')
+const { isInternal } = require('../isInternal')
 const mapToDB = (batchId, peerId, nodeId, peerData) => {
   return {
     peerId,
@@ -26,23 +27,28 @@ const batchUpdateDB = async (newSnapshots) => {
   await PeerSnapshot.bulkCreate(newSnapshots)
 }
 
-setInterval(async () => {
-  const batch = await Batch.create({})
-  const results = await Promise.all(nodes.map(async ({ nodeId, url }) => axios.get(url)
-    .then(res => Object.keys(res.data).map(peerId => mapToDB(batch.id, peerId, nodeId, res.data[peerId])))
-    .catch(e => {
-      console.error(`Query for node ${nodeId} failed with: ${e.message}`);
-      return []
-    })));
+const createNewBatch = async () => {
+    const batch = await Batch.create({})
+    const results = await Promise.all(nodes.map(async ({ nodeId, url }) => axios.get(url)
+        .then(res => Object.keys(res.data).map(peerId => mapToDB(batch.id, peerId, nodeId, res.data[peerId])))
+        .catch(e => {
+            console.error(`Query for node ${nodeId} failed with: ${e.message}`);
+            return []
+        })));
 
-  const success = results.some(result => result.length > 0)
-  await Batch.update({success: success}, {where: {id: batch.id}})
-  const flatResults = results.flat()
-  for (const entry of flatResults) {
-     entry.ipProvider = await getIpMetaInfo(entry.host)
-  }
+    const success = results.some(result => result.length > 0)
+    await Batch.update({success: success}, {where: {id: batch.id}})
+    const flatResults = results.flat()
+    for (const entry of flatResults) {
+        entry.ipProvider = await getIpMetaInfo(entry.host)
+    }
+    for (const entry of flatResults) {
+        entry.internal = isInternal(entry)
+    }
 
-  if(success) {
-    await batchUpdateDB(flatResults)
-  }
-}, 60000)
+    if(success) {
+        await batchUpdateDB(flatResults)
+    }
+}
+createNewBatch()
+//setInterval(createNewBatch, 60000)

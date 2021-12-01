@@ -4,18 +4,15 @@ const cache = {};
 
 const getIpMetaInfo = async (address) => {
   if (cache[address]) return cache[address];
-  const result = await axios.get(`https://api.ipregistry.co/${address}?key=${process.env.IP_REGISTRY_KEY}`)
-    .then(res => res.data)
+  return await axios.get(`https://api.ipregistry.co/${address}?key=${process.env.IP_REGISTRY_KEY}`)
+    .then(res => {
+      cache[address] = res.data.connection.organization;
+      return res.data.connection.organization
+    })
     .catch(e => {
-      console.error(e.message);
-      return {
-        connection: {
-          organization: ''
-        }
-      }
+      console.error('ipregistry.io query failed with ' + e.message);
+      return '';
     });
-  cache[address] = result.connection.organization;
-  return cache[address];
 };
 
 module.exports = {
